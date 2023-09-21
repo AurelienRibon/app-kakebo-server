@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "tsc && node dist/index.js"
+    "build": "rm -rf dist && tsc",
+    "start": "node dist/index.js"
   },
   "author": "Aurelien Ribon <aurelien.ribon@gmail.com>",
   "license": "ISC",

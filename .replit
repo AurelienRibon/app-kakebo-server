@@ -1,4 +1,4 @@
-entrypoint = "dist/index.js"
+run = "npm run build && npm start"
 modules = ["nodejs-18:v3-20230608-f4cd419"]
 hidden = [".config", ".git", "node_modules"]
 
@@ -6,4 +6,5 @@ hidden = [".config", ".git", "node_modules"]
 channel = "stable-23_05"
 
 [deployment]
+build = ["sh", "-c", "npm install && npm run build"]
 run = ["sh", "-c", "npm start"]
