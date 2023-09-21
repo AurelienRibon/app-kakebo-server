@@ -1,0 +1,9 @@
+entrypoint = "dist/index.js"
+modules = ["nodejs-18:v3-20230608-f4cd419"]
+hidden = [".config", ".git", "node_modules"]
+
+[nix]
+channel = "stable-23_05"
+
+[deployment]
+run = ["sh", "-c", "npm start"]
