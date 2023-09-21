@@ -4,8 +4,8 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "target": "ES2018",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "target": "ESNext",
+    "lib": ["ESNext"],
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
