@@ -1,0 +1,24 @@
+{
+  "name": "kakebo-server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "tsc && node dist/index.js"
+  },
+  "author": "Aurelien Ribon <aurelien.ribon@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "duckdb": "^0.8.1"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.3",
+    "@types/express": "^4.17.17",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "eslint": "^8.49.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}

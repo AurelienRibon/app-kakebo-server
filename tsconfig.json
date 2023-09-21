@@ -1,0 +1,14 @@
+{
+  "include": ["index.ts", "lib/**/*.ts"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2018",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  }
+}
