@@ -1,16 +1,75 @@
 import duckdb from 'duckdb';
-import { Expense, fromDBExpenses } from './expenses';
+import { Expense, ExpenseDB, fromDBExpenses } from './expenses';
+
+const FILE = 'expenses.csv';
+const FILE_DEV = 'expenses-dev.csv';
 
 type DBOptions = {
   dev: boolean;
-}
+};
 
 export class DB {
   db: duckdb.Database;
+  file: string;
+  from: string;
 
-  constructor() {
+  // Constructor
+  // ---------------------------------------------------------------------------
+
+  constructor(options?: DBOptions) {
     this.db = new duckdb.Database(':memory:');
+    this.file = options?.dev ? FILE_DEV : FILE;
+    this.from = `read_csv_auto('${this.file}', header=True, nullstr='<never>')`;
   }
+
+  // Read
+  // ---------------------------------------------------------------------------
+
+  async loadExpenses(): Promise<Expense[]> {
+    const rows = (await this.query(`SELECT * FROM ${this.from}`)) as ExpenseDB[];
+    return fromDBExpenses(rows);
+  }
+
+  async loadSchema(): Promise<duckdb.RowData[]> {
+    return this.query(`DESCRIBE SELECT * FROM ${this.from}`);
+  }
+
+  // Write
+  // ---------------------------------------------------------------------------
+
+  async upsertExpenses(expenses: Expense[]): Promise<void> {
+    if (expenses.length === 0) {
+      return;
+    }
+
+    const rand = Math.floor(Math.random() * 1000);
+    const tableId = `expenses_${Date.now()}_${rand}`;
+    const tableDef = generateTableDef();
+
+    const insertLines = expenses.map(
+      (it) => `INSERT OR REPLACE INTO ${tableId} VALUES (
+        '${it._id}',
+        TIMESTAMP epoch_ms(${it.date.getTime()}),
+        ${it.amount},
+        '${it.category}',
+        '${it.label}',
+        '${it.periodicity}',
+        ${it.checked},
+        ${it.deleted},
+        TIMESTAMP epoch_ms(${it.updatedAt.getTime()})
+      )`,
+    );
+
+    const sql = `
+      CREATE TABLE ${tableId} (${tableDef});
+      ${insertLines.join('\n')}
+      COPY ${tableId} TO '${this.file}' (HEADER);`;
+
+    await this.exec(sql);
+  }
+
+  // Low-level DuckDB Access
+  // ---------------------------------------------------------------------------
 
   async query(sql: string): Promise<duckdb.RowData[]> {
     return new Promise((resolve, reject) => {
@@ -39,37 +98,21 @@ export class DB {
       });
     });
   }
-
-  async loadExpenses(options?: DBOptions): Promise<Expense[]> {
-    const sql = options?.dev
-      ? `SELECT * FROM read_csv_auto('expenses-dev.csv', header=True)`
-      : `SELECT * FROM read_csv_auto('expenses.csv', header=True)`;
-    const rows = await this.query(sql);
-    return fromDBExpenses(rows);
-  }
-
-  async loadSchema(options?: DBOptions): Promise<duckdb.RowData[]> {
-    const sql = options?.dev
-      ? `DESCRIBE SELECT * FROM read_csv_auto('expenses-dev.csv', header=True)`
-      : `DESCRIBE SELECT * FROM read_csv_auto('expenses.csv', header=True)`;
-    return this.query(sql);
-  }
-
-  async upsertExpenses(expenses: Expense[], options?: DBOptions): Promise<void> {
-    void expenses;
-    void options;
-    console.log('TODO upsertExpenses');
-  }
 }
 
-// CREATE TABLE Expenses(
-//   _id         VARCHAR,
-//   date        TIMESTAMP,
-//   amount      DOUBLE,
-//   category    VARCHAR,
-//   label       VARCHAR,
-//   periodicity VARCHAR,
-//   checked     BOOLEAN,
-//   deleted     BOOLEAN,
-//   updatedAt   TIMESTAMP,
-// );
+// -----------------------------------------------------------------------------
+// HELPERS
+// -----------------------------------------------------------------------------
+
+function generateTableDef(): string {
+  return `
+    _id         VARCHAR PRIMARY KEY,
+    date        TIMESTAMP,
+    amount      DOUBLE,
+    category    VARCHAR,
+    label       VARCHAR,
+    periodicity VARCHAR,
+    checked     BOOLEAN,
+    deleted     BOOLEAN,
+    updatedAt   TIMESTAMP`;
+}

@@ -1,4 +1,3 @@
-import { RowData } from 'duckdb';
 import { addOneMonth, isSameMonth } from './dates';
 import { guid } from './utils';
 
@@ -18,39 +17,77 @@ export type Expense = {
   updatedAt: Date;
 };
 
-export type ExpenseStr = Record<string, string | number | boolean>;
-export type ExpenseDB = RowData;
+export type ExpenseUser = Record<string, unknown>;
+
+export type ExpenseDB = {
+  _id: string;
+  date: string;
+  amount: number;
+  category: string;
+  label: string;
+  periodicity: string;
+  checked: boolean;
+  deleted: boolean;
+  updatedAt: string;
+};
 
 // -----------------------------------------------------------------------------
 // API: CONVERSIONS
 // -----------------------------------------------------------------------------
 
-export function fromUserExpenses(expenses: ExpenseStr[]): Expense[] {
-  return expenses.map((it) => ({
-    _id: String(it._id),
-    date: new Date(String(it.date)),
-    amount: Number(it.amount),
-    category: String(it.category),
-    label: String(it.label),
-    periodicity: String(it.periodicity),
-    checked: Boolean(it.checked),
-    deleted: Boolean(it.deleted),
-    updatedAt: new Date(String(it.updatedAt)),
-  }));
+export function fromUserExpenses(expensesUser: ExpenseUser[]): Expense[] {
+  return expensesUser.filter(isExpenseUserValid).map(fromDBExpense);
 }
 
-export function fromDBExpenses(expenses: ExpenseDB[]): Expense[] {
-  return expenses.map((it) => ({
-    _id: String(it._id),
-    date: new Date(String(it.date)),
-    amount: Number(it.amount),
-    category: String(it.category),
-    label: String(it.label),
-    periodicity: String(it.periodicity),
-    checked: Boolean(it.checked),
-    deleted: Boolean(it.deleted),
-    updatedAt: new Date(String(it.updatedAt)),
-  }));
+export function fromDBExpenses(expensesDB: ExpenseDB[]): Expense[] {
+  return expensesDB.map(fromDBExpense);
+}
+
+export function fromDBExpense(expenseDB: ExpenseDB): Expense {
+  return {
+    ...expenseDB,
+    date: new Date(expenseDB.date),
+    updatedAt: new Date(expenseDB.updatedAt),
+  };
+}
+
+function isExpenseUserValid(expenseStr: ExpenseUser): expenseStr is ExpenseDB {
+  const it = expenseStr;
+  return (
+    isNonEmptyString(it._id) &&
+    isDateString(it.date) &&
+    isNumber(it.amount) &&
+    isNonEmptyString(it.category) &&
+    isString(it.label) &&
+    isPeriodicity(it.periodicity) &&
+    isBoolean(it.checked) &&
+    isBoolean(it.deleted) &&
+    isDateString(it.updatedAt)
+  );
+}
+
+function isBoolean(value: unknown): value is boolean {
+  return typeof value === 'boolean';
+}
+
+function isNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0;
+}
+
+function isDateString(value: unknown): value is string {
+  return !isNaN(new Date(String(value)).getTime());
+}
+
+function isPeriodicity(value: unknown): value is 'one-time' | 'monthly' {
+  return value === 'one-time' || value === 'montly';
 }
 
 // -----------------------------------------------------------------------------

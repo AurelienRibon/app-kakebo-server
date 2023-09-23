@@ -2,9 +2,8 @@ import express from 'express';
 import compression from 'compression';
 import { DB } from './lib/db.js';
 import { Logger } from './lib/logger.js';
-import { diffExpenses, fromDBExpenses, fromUserExpenses, generateNewMonthlyExpenses } from './lib/expenses.js';
+import { diffExpenses, fromUserExpenses, generateNewMonthlyExpenses } from './lib/expenses.js';
 
-const db = new DB();
 const app = express();
 
 app.use(compression());
@@ -33,7 +32,8 @@ app.get('/schema', async (req, res) => {
   const dev = !!req.query.dev;
 
   logger.log('Retrieving schema...');
-  const rows = await db.loadSchema({ dev });
+  const db = new DB({ dev });
+  const rows = await db.loadSchema();
 
   logger.log('Sending response...');
   res.json(rows);
@@ -46,7 +46,8 @@ app.get('/expenses', async (req, res) => {
   const dev = !!req.query.dev;
 
   logger.log('Retrieving expenses...');
-  const rows = await db.loadExpenses({ dev });
+  const db = new DB({ dev });
+  const rows = await db.loadExpenses();
 
   logger.log('Sending response...');
   res.json(rows);
@@ -59,8 +60,9 @@ app.post('/expenses/sync', async (req, res) => {
   const dev = !!req.query.dev;
 
   logger.log('Loading expenses...');
+  const db = new DB({ dev });
   const userExpenses = fromUserExpenses(req.body.expenses);
-  const knownExpenses = fromDBExpenses(await db.loadExpenses({ dev }));
+  const knownExpenses = await db.loadExpenses();
 
   logger.log('Computing diff...');
   const expensesToUpsertForServer = diffExpenses(userExpenses, knownExpenses);
@@ -75,7 +77,7 @@ app.post('/expenses/sync', async (req, res) => {
   logger.log(`nbNewForServer=${nbNewForServer}, nbNewForUser=${nbNewForUser}, nbNewMonthly=${nbNewMonthly}`);
 
   const expensesToUpsert = [...expensesToUpsertForServer, ...monthlyExpensesToInsert];
-  await db.upsertExpenses(expensesToUpsert, { dev });
+  await db.upsertExpenses(expensesToUpsert);
 
   logger.log('Sending response...');
   res.json({ expenses: [...expensesToUpsertForUser, ...monthlyExpensesToInsert] });
