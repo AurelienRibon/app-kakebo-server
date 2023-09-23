@@ -1,6 +1,10 @@
 import duckdb from 'duckdb';
 import { Expense, fromDBExpenses } from './expenses';
 
+type DBOptions = {
+  dev: boolean;
+}
+
 export class DB {
   db: duckdb.Database;
 
@@ -36,17 +40,24 @@ export class DB {
     });
   }
 
-  async loadExpenses(): Promise<Expense[]> {
-    const rows = await this.query(`SELECT * FROM read_csv_auto('expenses.csv', header=True)`);
+  async loadExpenses(options?: DBOptions): Promise<Expense[]> {
+    const sql = options?.dev
+      ? `SELECT * FROM read_csv_auto('expenses-dev.csv', header=True)`
+      : `SELECT * FROM read_csv_auto('expenses.csv', header=True)`;
+    const rows = await this.query(sql);
     return fromDBExpenses(rows);
   }
 
-  async loadSchema(): Promise<duckdb.RowData[]> {
-    return this.query(`DESCRIBE SELECT * FROM read_csv_auto('expenses.csv', header=True)`);
+  async loadSchema(options?: DBOptions): Promise<duckdb.RowData[]> {
+    const sql = options?.dev
+      ? `DESCRIBE SELECT * FROM read_csv_auto('expenses-dev.csv', header=True)`
+      : `DESCRIBE SELECT * FROM read_csv_auto('expenses.csv', header=True)`;
+    return this.query(sql);
   }
 
-  async upsertExpenses(expenses: Expense[]): Promise<void> {
+  async upsertExpenses(expenses: Expense[], options?: DBOptions): Promise<void> {
     void expenses;
+    void options;
     console.log('TODO upsertExpenses');
   }
 }

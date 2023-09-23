@@ -30,9 +30,10 @@ app.get('/', (req, res) => {
 
 app.get('/schema', async (req, res) => {
   const logger = new Logger('/schema');
+  const dev = !!req.query.dev;
 
   logger.log('Retrieving schema...');
-  const rows = await db.loadSchema();
+  const rows = await db.loadSchema({ dev });
 
   logger.log('Sending response...');
   res.json(rows);
@@ -42,9 +43,10 @@ app.get('/schema', async (req, res) => {
 
 app.get('/expenses', async (req, res) => {
   const logger = new Logger('/expenses');
+  const dev = !!req.query.dev;
 
   logger.log('Retrieving expenses...');
-  const rows = await db.loadExpenses();
+  const rows = await db.loadExpenses({ dev });
 
   logger.log('Sending response...');
   res.json(rows);
@@ -54,10 +56,11 @@ app.get('/expenses', async (req, res) => {
 
 app.post('/expenses/sync', async (req, res) => {
   const logger = new Logger('/expenses/sync');
+  const dev = !!req.query.dev;
 
   logger.log('Loading expenses...');
   const userExpenses = fromUserExpenses(req.body.expenses);
-  const knownExpenses = fromDBExpenses(await db.loadExpenses());
+  const knownExpenses = fromDBExpenses(await db.loadExpenses({ dev }));
 
   logger.log('Computing diff...');
   const expensesToUpsertForServer = diffExpenses(userExpenses, knownExpenses);
@@ -71,7 +74,8 @@ app.post('/expenses/sync', async (req, res) => {
   const nbNewMonthly = monthlyExpensesToInsert.length;
   logger.log(`nbNewForServer=${nbNewForServer}, nbNewForUser=${nbNewForUser}, nbNewMonthly=${nbNewMonthly}`);
 
-  await db.upsertExpenses([...expensesToUpsertForServer, ...monthlyExpensesToInsert]);
+  const expensesToUpsert = [...expensesToUpsertForServer, ...monthlyExpensesToInsert];
+  await db.upsertExpenses(expensesToUpsert, { dev });
 
   logger.log('Sending response...');
   res.json({ expenses: [...expensesToUpsertForUser, ...monthlyExpensesToInsert] });
