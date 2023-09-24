@@ -49,7 +49,7 @@ export class DB {
 
     const insertLines = expenses.map((it) => {
       const values = generateExpenseValues(it);
-      return `INSERT OR REPLACE INTO ${tableId} VALUES (${values})`;
+      return `INSERT OR REPLACE INTO ${tableId} VALUES (${values});`;
     });
 
     const sql = `
