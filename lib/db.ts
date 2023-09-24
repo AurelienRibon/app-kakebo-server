@@ -67,7 +67,7 @@ export class DB {
       this.db.all(sql, (err, res) => {
         if (err) {
           err.message = `DuckDB query failed. ${err.message}`;
-          err.stack += `\n\n...with SQL:\n\n${sql}`;
+          err.stack += `\n\n...with SQL:\n\n${sql.slice(0, 1000)}`;
           reject(err);
         } else {
           resolve(res);
@@ -81,7 +81,7 @@ export class DB {
       this.db.exec(sql, (err, res) => {
         if (err) {
           err.message = `DuckDB exec failed. ${err.message}`;
-          err.stack += `\n\n...with SQL:\n\n${sql}`;
+          err.stack += `\n\n...with SQL:\n\n${sql.slice(0, 1000)}`;
           reject(err);
         } else {
           resolve(res);
