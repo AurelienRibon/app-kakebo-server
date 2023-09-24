@@ -44,24 +44,15 @@ export class DB {
 
     const rand = Math.floor(Math.random() * 1000);
     const tableId = `expenses_${Date.now()}_${rand}`;
-    const tableDef = generateTableDef();
+    const columns = generateColumns();
 
-    const insertLines = expenses.map(
-      (it) => `INSERT OR REPLACE INTO ${tableId} VALUES (
-        '${it._id}',
-        TIMESTAMP epoch_ms(${it.date.getTime()}),
-        ${it.amount},
-        '${it.category}',
-        '${it.label}',
-        '${it.periodicity}',
-        ${it.checked},
-        ${it.deleted},
-        TIMESTAMP epoch_ms(${it.updatedAt.getTime()})
-      )`,
-    );
+    const insertLines = expenses.map((it) => {
+      const values = generateExpenseValues(it);
+      return `INSERT OR REPLACE INTO ${tableId} VALUES (${values})`;
+    });
 
     const sql = `
-      CREATE TABLE ${tableId} (${tableDef});
+      CREATE TABLE ${tableId} (${columns});
       ${insertLines.join('\n')}
       COPY ${tableId} TO '${this.file}' (HEADER);`;
 
@@ -104,15 +95,34 @@ export class DB {
 // HELPERS
 // -----------------------------------------------------------------------------
 
-function generateTableDef(): string {
-  return `
-    _id         VARCHAR PRIMARY KEY,
-    date        TIMESTAMP,
-    amount      DOUBLE,
-    category    VARCHAR,
-    label       VARCHAR,
-    periodicity VARCHAR,
-    checked     BOOLEAN,
-    deleted     BOOLEAN,
-    updatedAt   TIMESTAMP`;
+function generateColumns(): string {
+  const columns = [
+    '_id         VARCHAR PRIMARY KEY',
+    'date        TIMESTAMP',
+    'amount      DOUBLE',
+    'category    VARCHAR',
+    'label       VARCHAR',
+    'periodicity VARCHAR',
+    'checked     BOOLEAN',
+    'deleted     BOOLEAN',
+    'updatedAt   TIMESTAMP',
+  ];
+
+  return columns.join(', ');
+}
+
+function generateExpenseValues(expense: Expense): string {
+  const values = [
+    `'${expense._id}'`,
+    `TIMESTAMP epoch_ms(${expense.date.getTime()})`,
+    `${expense.amount}`,
+    `'${expense.category}'`,
+    `'${expense.label}'`,
+    `'${expense.periodicity}'`,
+    `${expense.checked}`,
+    `${expense.deleted}`,
+    `TIMESTAMP epoch_ms(${expense.updatedAt.getTime()})`,
+  ];
+
+  return values.join(', ');
 }
