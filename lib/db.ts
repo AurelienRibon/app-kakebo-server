@@ -65,7 +65,8 @@ export class DB {
 
   async query(sql: string): Promise<duckdb.RowData[]> {
     return new Promise((resolve, reject) => {
-      this.db.all(sql, (err, res) => {
+      const conn = this.db.connect();
+      conn.all(sql, (err, res) => {
         if (err) {
           err.message = `DuckDB query failed. ${err.message}`;
           err.stack += `\n\n...with SQL:\n\n${sql}`;
@@ -79,7 +80,8 @@ export class DB {
 
   async exec(sql: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.db.exec(sql, (err, res) => {
+      const conn = this.db.connect();
+      conn.exec(sql, (err, res) => {
         if (err) {
           err.message = `DuckDB exec failed. ${err.message}`;
           err.stack += `\n\n...with SQL:\n\n${sql}`;
