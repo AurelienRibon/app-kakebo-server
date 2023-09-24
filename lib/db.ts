@@ -53,7 +53,8 @@ export class DB {
     });
 
     const sql = `
-      CREATE TABLE ${tableId} (${columns});
+      CREATE TEMP TABLE ${tableId} (${columns});
+      COPY INTO ${tableId} FROM ${this.from};
       ${insertLines.join('\n')}
       COPY (${select}) TO '${this.file}' (HEADER);`;
 
