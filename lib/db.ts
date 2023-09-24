@@ -40,10 +40,6 @@ export class DB {
   // ---------------------------------------------------------------------------
 
   async upsertExpenses(expenses: Expense[]): Promise<void> {
-    if (expenses.length === 0) {
-      return;
-    }
-
     const rand = Math.floor(Math.random() * 1000);
     const tableId = `expenses_${Date.now()}_${rand}`;
     const columnsTable = generateColumnsForTable();

@@ -64,20 +64,26 @@ app.post('/expenses/sync', async (req, res) => {
   const userExpenses = fromUserExpenses(req.body.expenses);
   const knownExpenses = await db.loadExpenses();
 
-  logger.log('Computing diff...');
+  logger.log('Computing diff for server...');
   const expensesToUpsertForServer = diffExpenses(userExpenses, knownExpenses);
+
+  logger.log('Computing diff for user...');
   const expensesToUpsertForUser = diffExpenses(knownExpenses, userExpenses);
 
   logger.log('Computing new monthly expenses...');
   const monthlyExpensesToInsert = generateNewMonthlyExpenses(knownExpenses);
 
+  logger.log('Logging stats...');
   const nbNewForServer = expensesToUpsertForServer.length;
   const nbNewForUser = expensesToUpsertForUser.length;
   const nbNewMonthly = monthlyExpensesToInsert.length;
   logger.log(`nbNewForServer=${nbNewForServer}, nbNewForUser=${nbNewForUser}, nbNewMonthly=${nbNewMonthly}`);
 
-  const expensesToUpsert = [...expensesToUpsertForServer, ...monthlyExpensesToInsert];
-  await db.upsertExpenses(expensesToUpsert);
+  if (expensesToUpsertForServer.length > 0 || monthlyExpensesToInsert.length > 0) {
+    logger.log('Starting upsert...');
+    const expensesToUpsert = [...expensesToUpsertForServer, ...monthlyExpensesToInsert];
+    await db.upsertExpenses(expensesToUpsert);
+  }
 
   logger.log('Sending response...');
   res.json({ expenses: [...expensesToUpsertForUser, ...monthlyExpensesToInsert] });
