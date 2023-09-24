@@ -114,14 +114,14 @@ function generateColumns(): string {
 function generateExpenseValues(expense: Expense): string {
   const values = [
     `'${expense._id}'`,
-    `TIMESTAMP epoch_ms(${expense.date.getTime()})`,
+    `epoch_ms(${expense.date.getTime()})`,
     `${expense.amount}`,
     `'${expense.category}'`,
     `'${expense.label}'`,
     `'${expense.periodicity}'`,
     `${expense.checked}`,
     `${expense.deleted}`,
-    `TIMESTAMP epoch_ms(${expense.updatedAt.getTime()})`,
+    `epoch_ms(${expense.updatedAt.getTime()})`,
   ];
 
   return values.join(', ');
