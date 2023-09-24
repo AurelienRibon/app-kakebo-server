@@ -97,15 +97,15 @@ export class DB {
 
 function generateColumns(): string {
   const columns = [
-    '_id         VARCHAR PRIMARY KEY',
-    'date        TIMESTAMP',
-    'amount      DOUBLE',
-    'category    VARCHAR',
-    'label       VARCHAR',
+    '_id VARCHAR PRIMARY KEY',
+    'date TIMESTAMP',
+    'amount DOUBLE',
+    'category VARCHAR',
+    'label VARCHAR',
     'periodicity VARCHAR',
-    'checked     BOOLEAN',
-    'deleted     BOOLEAN',
-    'updatedAt   TIMESTAMP',
+    'checked BOOLEAN',
+    'deleted BOOLEAN',
+    'updatedAt TIMESTAMP',
   ];
 
   return columns.join(', ');
