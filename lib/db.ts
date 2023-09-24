@@ -19,7 +19,9 @@ export class DB {
   constructor(options?: DBOptions) {
     this.db = new duckdb.Database(':memory:');
     this.file = options?.dev ? FILE_DEV : FILE;
-    this.from = `read_csv_auto('${this.file}', header=True, nullstr='<never>')`;
+
+    const columns = generateColumnsForCSV();
+    this.from = `read_csv('${this.file}', header=True, columns=${columns})`;
   }
 
   // Read
@@ -98,6 +100,22 @@ export class DB {
 // -----------------------------------------------------------------------------
 // HELPERS
 // -----------------------------------------------------------------------------
+
+function generateColumnsForCSV(): string {
+  const columns = [
+    `'_id': 'VARCHAR'`,
+    `'date': 'TIMESTAMP'`,
+    `'amount': 'DOUBLE'`,
+    `'category': 'VARCHAR'`,
+    `'label': 'VARCHAR'`,
+    `'periodicity': 'VARCHAR'`,
+    `'checked': 'BOOLEAN'`,
+    `'deleted': 'BOOLEAN'`,
+    `'updatedAt': 'TIMESTAMP'`,
+  ];
+
+  return '{' + columns.join(', ') + '}';
+}
 
 function generateColumnsForTable(): string {
   const columns = [
