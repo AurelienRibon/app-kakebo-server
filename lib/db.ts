@@ -44,7 +44,7 @@ export class DB {
 
     const rand = Math.floor(Math.random() * 1000);
     const tableId = `expenses_${Date.now()}_${rand}`;
-    const columns = generateColumns();
+    const columnsTable = generateColumnsForTable();
     const select = `SELECT * FROM ${tableId} ORDER BY date,category`;
 
     const insertLines = expenses.map((it) => {
@@ -53,8 +53,8 @@ export class DB {
     });
 
     const sql = `
-      CREATE TEMP TABLE ${tableId} (${columns});
-      COPY INTO ${tableId} FROM ${this.from};
+      CREATE TEMP TABLE ${tableId} (${columnsTable});
+      COPY ${tableId} FROM '${this.file}' (HEADER);
       ${insertLines.join('\n')}
       COPY (${select}) TO '${this.file}' (HEADER);`;
 
@@ -99,7 +99,7 @@ export class DB {
 // HELPERS
 // -----------------------------------------------------------------------------
 
-function generateColumns(): string {
+function generateColumnsForTable(): string {
   const columns = [
     '_id VARCHAR PRIMARY KEY',
     'date TIMESTAMP',
