@@ -45,6 +45,7 @@ export class DB {
     const rand = Math.floor(Math.random() * 1000);
     const tableId = `expenses_${Date.now()}_${rand}`;
     const columns = generateColumns();
+    const select = `SELECT * FROM ${tableId} ORDER BY date,category`;
 
     const insertLines = expenses.map((it) => {
       const values = generateExpenseValues(it);
@@ -54,7 +55,7 @@ export class DB {
     const sql = `
       CREATE TABLE ${tableId} (${columns});
       ${insertLines.join('\n')}
-      COPY ${tableId} TO '${this.file}' (HEADER);`;
+      COPY (${select}) TO '${this.file}' (HEADER);`;
 
     await this.exec(sql);
   }
