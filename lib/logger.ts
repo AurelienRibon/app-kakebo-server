@@ -27,6 +27,6 @@ export class Logger {
     console.log(`${this.namespace} - Error! +${durationMs}ms, +${totalDurationMs}ms`);
 
     const stack = err instanceof Error ? err.stack : String(err);
-    console.error(stack);
+    console.error('\n' + stack + '\n');
   }
 }
