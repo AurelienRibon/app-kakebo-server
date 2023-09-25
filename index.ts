@@ -66,18 +66,15 @@ app.post('/expenses/sync', async (req, res) => {
 
   logger.log('Computing diff for server...');
   const expensesToUpsertForServer = diffExpenses(userExpenses, knownExpenses);
+  logger.log(`Found ${expensesToUpsertForServer.length} new expenses.`);
 
   logger.log('Computing diff for user...');
   const expensesToUpsertForUser = diffExpenses(knownExpenses, userExpenses);
+  logger.log(`Found ${expensesToUpsertForUser.length} new expenses.`);
 
   logger.log('Computing new monthly expenses...');
   const monthlyExpensesToInsert = generateNewMonthlyExpenses(knownExpenses);
-
-  logger.log('Logging stats...');
-  const nbNewForServer = expensesToUpsertForServer.length;
-  const nbNewForUser = expensesToUpsertForUser.length;
-  const nbNewMonthly = monthlyExpensesToInsert.length;
-  logger.log(`nbNewForServer=${nbNewForServer}, nbNewForUser=${nbNewForUser}, nbNewMonthly=${nbNewMonthly}`);
+  logger.log(`Found ${monthlyExpensesToInsert.length} new expenses.`);
 
   if (expensesToUpsertForServer.length > 0 || monthlyExpensesToInsert.length > 0) {
     logger.log('Starting upsert...');
