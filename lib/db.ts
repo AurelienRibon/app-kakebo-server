@@ -3,6 +3,7 @@ import { Expense, ExpenseDB, fromDBExpenses } from './expenses';
 
 const FILE = 'expenses.csv';
 const FILE_DEV = 'expenses-dev.csv';
+const TS_FORMAT = '%Y-%m-%dT%H:%M:%S.%gZ';
 
 type DBOptions = {
   dev: boolean;
@@ -21,7 +22,7 @@ export class DB {
     this.file = options?.dev ? FILE_DEV : FILE;
 
     const columns = generateColumnsForCSV();
-    this.from = `read_csv('${this.file}', header=True, columns=${columns})`;
+    this.from = `read_csv('${this.file}', header=True, columns=${columns}, timestampformat='${TS_FORMAT}')`;
   }
 
   // Read
