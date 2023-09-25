@@ -22,7 +22,7 @@ export class DB {
     this.file = options?.dev ? FILE_DEV : FILE;
 
     const columns = generateColumnsForCSV();
-    this.from = `read_csv('${this.file}', header=True, columns=${columns}, timestampformat='${TS_FORMAT}')`;
+    this.from = `read_csv('${this.file}', HEADER=true, COLUMNS=${columns}, TIMESTAMPFORMAT='${TS_FORMAT}')`;
   }
 
   // Read
@@ -53,9 +53,9 @@ export class DB {
 
     const sql = `
       CREATE TEMP TABLE ${tableId} (${columnsTable});
-      COPY ${tableId} FROM '${this.file}' (HEADER);
+      COPY ${tableId} FROM '${this.file}' (HEADER, TIMESTAMPFORMAT='${TS_FORMAT}');
       ${insertLines.join('\n')}
-      COPY (${select}) TO '${this.file}' (HEADER);`;
+      COPY (${select}) TO '${this.file}' (HEADER, TIMESTAMPFORMAT='${TS_FORMAT}');`;
 
     await this.exec(sql);
   }
