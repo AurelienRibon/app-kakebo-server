@@ -53,9 +53,9 @@ export class DB {
 
     const sql = `
       CREATE TEMP TABLE ${tableId} (${columnsTable});
-      COPY ${tableId} FROM '${this.file}' (HEADER, TIMESTAMPFORMAT='${TS_FORMAT}');
+      COPY ${tableId} FROM '${this.file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');
       ${insertLines.join('\n')}
-      COPY (${select}) TO '${this.file}' (HEADER, TIMESTAMPFORMAT='${TS_FORMAT}');`;
+      COPY (${select}) TO '${this.file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');`;
 
     await this.exec(sql);
   }
