@@ -70,7 +70,8 @@ app.post('/expenses/mutate', async (req, res) => {
   const statements = req.body.statements;
 
   try {
-    logger.log('Mutating expenses...');
+    logger.log(`Mutating expenses...`);
+    logger.raw(statements);
     const db = new DB({ dev });
     await db.mutateExpenses(statements);
 

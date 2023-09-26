@@ -31,4 +31,8 @@ export class Logger {
     const stack = err instanceof Error ? err.stack : String(err);
     console.error('\n' + stack + '\n');
   }
+
+  raw(...args: unknown): void {
+    console.log(...args);
+  }
 }
