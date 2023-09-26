@@ -10,6 +10,8 @@ type DBOptions = {
   dev: boolean;
 };
 
+export type Row = Record<string, unknown>;
+
 export class DB {
   db: duckdb.Database;
   file: string;
@@ -30,12 +32,16 @@ export class DB {
   // ---------------------------------------------------------------------------
 
   async loadExpenses(): Promise<Expense[]> {
-    const rows = (await this.query(`SELECT * FROM ${this.from}`)) as ExpenseDB[];
+    const rows = (await this.queryExpenses(`SELECT * FROM %expenses%`)) as ExpenseDB[];
     return fromDBExpenses(rows);
   }
 
   async loadSchema(): Promise<duckdb.RowData[]> {
-    return this.query(`DESCRIBE SELECT * FROM ${this.from}`);
+    return this.query(`DESCRIBE SELECT * FROM %expenses%`);
+  }
+
+  async queryExpenses(query: string): Promise<Row[]> {
+    return this.query(query.replace('%expenses%', this.from));
   }
 
   // Write

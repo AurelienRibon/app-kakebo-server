@@ -64,6 +64,25 @@ app.get('/expenses', async (req, res) => {
   }
 });
 
+app.post('/expenses/query', async (req, res) => {
+  const logger = new Logger('/expenses/query');
+  const dev = !!req.query.dev;
+  const query = req.body.query;
+
+  try {
+    logger.log(`Querying expenses...`);
+    logger.raw([query]);
+    const db = new DB({ dev });
+    const rows = await db.queryExpenses(query);
+
+    logger.log('Done');
+    res.json(rows);
+  } catch (err: any) {
+    logger.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/expenses/mutate', async (req, res) => {
   const logger = new Logger('/expenses/mutate');
   const dev = !!req.query.dev;
