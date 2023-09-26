@@ -118,6 +118,7 @@ function generateColumnsForCSV(): string {
     `'periodicity': 'VARCHAR'`,
     `'checked': 'BOOLEAN'`,
     `'deleted': 'BOOLEAN'`,
+    `'exception': 'BOOLEAN'`,
     `'updatedAt': 'TIMESTAMP'`,
   ];
 
