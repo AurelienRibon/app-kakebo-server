@@ -45,7 +45,7 @@ export class DB {
     const rand = Math.floor(Math.random() * 1000);
     const tableId = `expenses_${Date.now()}_${rand}`;
     const columnsTable = generateColumnsForTable();
-    const select = `SELECT * FROM ${tableId} ORDER BY date,category`;
+    const select = `SELECT * FROM ${tableId} ORDER BY date ASC, category ASC, amount DESC`;
 
     const insertLines = expenses.map((it) => {
       const values = generateExpenseValues(it);
