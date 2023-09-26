@@ -71,12 +71,14 @@ app.get('/expenses', async (req, res) => {
 app.post('/expenses/sync', async (req, res) => {
   const logger = new Logger('/expenses/sync');
   const dev = !!req.query.dev;
+  const expenses = req.body.expenses;
 
   try {
     logger.log('Loading expenses...');
     const db = new DB({ dev });
-    const userExpenses = fromUserExpenses(req.body.expenses);
+    const userExpenses = fromUserExpenses(expenses);
     const knownExpenses = await db.loadExpenses();
+    logger.log(`Found expenses user:${userExpenses.length}, server: ${knownExpenses.length}.`);
 
     logger.log('Computing diff for server...');
     const expensesToUpsertForServer = diffExpenses(userExpenses, knownExpenses);
