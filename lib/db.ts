@@ -1,4 +1,5 @@
 import duckdb from 'duckdb';
+import { stringifyDate } from './dates';
 import { Expense, ExpenseDB, fromDBExpenses } from './expenses';
 
 const FILE = 'expenses.csv';
@@ -22,7 +23,7 @@ export class DB {
     this.file = options?.dev ? FILE_DEV : FILE;
 
     const columns = generateColumnsForCSV();
-    this.from = `read_csv('${this.file}', HEADER=true, COLUMNS=${columns}, TIMESTAMPFORMAT='${TS_FORMAT}')`;
+    this.from = `read_csv('${this.file}', header=true, columns=${columns}, timestampformat='${TS_FORMAT}')`;
   }
 
   // Read
@@ -101,7 +102,7 @@ export class DB {
 function generateColumnsForCSV(): string {
   const columns = [
     `'_id': 'VARCHAR'`,
-    `'date': 'TIMESTAMP'`,
+    `'date': 'DATE'`,
     `'amount': 'DOUBLE'`,
     `'category': 'VARCHAR'`,
     `'label': 'VARCHAR'`,
@@ -117,7 +118,7 @@ function generateColumnsForCSV(): string {
 function generateColumnsForTable(): string {
   const columns = [
     '_id VARCHAR PRIMARY KEY',
-    'date TIMESTAMP',
+    'date DATE',
     'amount DOUBLE',
     'category VARCHAR',
     'label VARCHAR',
@@ -131,16 +132,19 @@ function generateColumnsForTable(): string {
 }
 
 function generateExpenseValues(expense: Expense): string {
+  const date = stringifyDate(expense.date);
+  const ts = expense.updatedAt.getTime();
+
   const values = [
     `'${expense._id}'`,
-    `epoch_ms(${expense.date.getTime()})`,
+    `DATE '${date}'`,
     `${expense.amount}`,
     `'${expense.category}'`,
     `'${expense.label}'`,
     `'${expense.periodicity}'`,
     `${expense.checked}`,
     `${expense.deleted}`,
-    `epoch_ms(${expense.updatedAt.getTime()})`,
+    `epoch_ms(${ts})`,
   ];
 
   return values.join(', ');

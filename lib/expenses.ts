@@ -62,7 +62,7 @@ function isExpenseUserValid(expenseStr: ExpenseUser): expenseStr is ExpenseDB {
     isPeriodicity(it.periodicity) &&
     isBoolean(it.checked) &&
     isBoolean(it.deleted) &&
-    isDateString(it.updatedAt)
+    isTimestampString(it.updatedAt)
   );
 }
 
@@ -83,6 +83,10 @@ function isNonEmptyString(value: unknown): value is string {
 }
 
 function isDateString(value: unknown): value is string {
+  return isString(value) && value.match(/^\d{4}-\d{2}-\d{2}$/) !== null;
+}
+
+function isTimestampString(value: unknown): value is string {
   return !isNaN(new Date(String(value)).getTime());
 }
 
