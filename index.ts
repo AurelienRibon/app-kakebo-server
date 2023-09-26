@@ -1,8 +1,9 @@
-import express from 'express';
 import compression from 'compression';
+import express from 'express';
 import { DB } from './lib/db.js';
-import { Logger } from './lib/logger.js';
 import { diffExpenses, fromUserExpenses, generateNewMonthlyExpenses } from './lib/expenses.js';
+import { Logger } from './lib/logger.js';
+import { guid } from './lib/utils.js';
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
   if (req.method === 'OPTIONS') {
     res.send();
   } else {
+    res.locals.sessionId = guid();
     next();
   }
 });
@@ -28,7 +30,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/schema', async (req, res) => {
-  const logger = new Logger('/schema');
+  const logger = new Logger('/schema', res.locals.sessionId);
   const dev = !!req.query.dev;
 
   try {
@@ -47,7 +49,7 @@ app.get('/schema', async (req, res) => {
 });
 
 app.get('/expenses', async (req, res) => {
-  const logger = new Logger('/expenses');
+  const logger = new Logger('/expenses', res.locals.sessionId);
   const dev = !!req.query.dev;
 
   try {
@@ -66,7 +68,7 @@ app.get('/expenses', async (req, res) => {
 });
 
 app.post('/expenses/sync', async (req, res) => {
-  const logger = new Logger('/expenses/sync');
+  const logger = new Logger('/expenses/sync', res.locals.sessionId);
   const dev = !!req.query.dev;
 
   try {
