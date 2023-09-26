@@ -25,7 +25,9 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
+  const logger = new Logger('/');
   res.send('Hello!');
+  logger.log('Done.');
 });
 
 app.get('/schema', async (req, res) => {
