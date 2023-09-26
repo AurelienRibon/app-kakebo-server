@@ -32,7 +32,7 @@ export class Logger {
     console.error('\n' + stack + '\n');
   }
 
-  raw(...args: unknown): void {
+  raw(...args: unknown[]): void {
     console.log(...args);
   }
 }
