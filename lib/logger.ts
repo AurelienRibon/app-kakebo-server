@@ -1,12 +1,12 @@
 export class Logger {
   namespace: string;
-  sessionId: string;
+  header: string;
   startTime: number;
   lastTime: number;
 
-  constructor(namespace: string, sessionId: string) {
+  constructor(namespace: string) {
     this.namespace = namespace;
-    this.sessionId = sessionId;
+    this.header = new Date().toISOString();
     this.startTime = Date.now();
     this.lastTime = this.startTime;
   }
@@ -17,7 +17,7 @@ export class Logger {
     const totalDurationMs = now - this.startTime;
 
     this.lastTime = now;
-    console.log(`${this.sessionId}::${this.namespace} - ${message} +${durationMs}ms, +${totalDurationMs}ms`);
+    console.log(`${this.header}::${this.namespace} - ${message} +${durationMs}ms, +${totalDurationMs}ms`);
   }
 
   error(err: unknown): void {
