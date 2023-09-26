@@ -26,8 +26,8 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => {
   const logger = new Logger('/');
+  logger.log('Got request');
   res.send('Hello!');
-  logger.log('Done');
 });
 
 app.get('/schema', async (req, res) => {
@@ -39,10 +39,8 @@ app.get('/schema', async (req, res) => {
     const db = new DB({ dev });
     const rows = await db.loadSchema();
 
-    logger.log('Sending response...');
-    res.json(rows);
-
     logger.log('Done');
+    res.json(rows);
   } catch (err: any) {
     logger.error(err);
     res.status(500).json({ error: err.message });
@@ -58,10 +56,26 @@ app.get('/expenses', async (req, res) => {
     const db = new DB({ dev });
     const rows = await db.loadExpenses();
 
-    logger.log('Sending response...');
+    logger.log('Done');
     res.json(rows);
+  } catch (err: any) {
+    logger.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/expenses/mutate', async (req, res) => {
+  const logger = new Logger('/expenses/mutate');
+  const dev = !!req.query.dev;
+  const statements = req.body.statements;
+
+  try {
+    logger.log('Mutating expenses...');
+    const db = new DB({ dev });
+    await db.mutateExpenses(statements);
 
     logger.log('Done');
+    res.end();
   } catch (err: any) {
     logger.error(err);
     res.status(500).json({ error: err.message });
@@ -98,10 +112,8 @@ app.post('/expenses/sync', async (req, res) => {
       await db.upsertExpenses(expensesToUpsert);
     }
 
-    logger.log('Sending response...');
-    res.json({ expenses: [...expensesToUpsertForUser, ...monthlyExpensesToInsert] });
-
     logger.log('Done');
+    res.json({ expenses: [...expensesToUpsertForUser, ...monthlyExpensesToInsert] });
   } catch (err: any) {
     logger.error(err);
     res.status(500).json({ error: err.message });
