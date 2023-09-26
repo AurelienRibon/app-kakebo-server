@@ -42,20 +42,23 @@ export class DB {
   // ---------------------------------------------------------------------------
 
   async upsertExpenses(expenses: Expense[]): Promise<void> {
-    const rand = Math.floor(Math.random() * 1000);
-    const tableId = `expenses_${Date.now()}_${rand}`;
-    const columnsTable = generateColumnsForTable();
-    const select = `SELECT * FROM ${tableId} ORDER BY date,category,label,amount,deleted`;
-
     const insertLines = expenses.map((it) => {
       const values = generateExpenseValues(it);
-      return `INSERT OR REPLACE INTO ${tableId} VALUES (${values});`;
+      return `INSERT OR REPLACE INTO Expenses VALUES (${values});`;
     });
 
+    await this.mutateExpenses(insertLines);
+  }
+
+  async mutateExpenses(statements: string[]): Promise<void> {
+    const columnsTable = generateColumnsForTable();
+    const select = `SELECT * FROM Expenses ORDER BY date,category,label,amount,deleted`;
+    const mutation = statements.map(ensureSemicolon).join('\n');
+
     const sql = `
-      CREATE TEMP TABLE ${tableId} (${columnsTable});
-      COPY ${tableId} FROM '${this.file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');
-      ${insertLines.join('\n')}
+      CREATE TEMP TABLE Expenses (${columnsTable});
+      COPY Expenses FROM '${this.file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');
+      ${mutation}
       COPY (${select}) TO '${this.file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');`;
 
     await this.exec(sql);
@@ -148,4 +151,8 @@ function generateExpenseValues(expense: Expense): string {
   ];
 
   return values.join(', ');
+}
+
+function ensureSemicolon(sql: string): string {
+  return sql.endsWith(';') ? sql : sql + ';';
 }
