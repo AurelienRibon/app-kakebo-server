@@ -91,7 +91,7 @@ function isTimestampString(value: unknown): value is string {
 }
 
 function isPeriodicity(value: unknown): value is 'one-time' | 'monthly' {
-  return value === 'one-time' || value === 'montly';
+  return value === 'one-time' || value === 'monthly';
 }
 
 // -----------------------------------------------------------------------------
