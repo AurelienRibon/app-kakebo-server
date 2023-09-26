@@ -134,6 +134,7 @@ function generateColumnsForTable(): string {
     'periodicity VARCHAR',
     'checked BOOLEAN',
     'deleted BOOLEAN',
+    'exception BOOLEAN',
     'updatedAt TIMESTAMP',
   ];
 
@@ -153,6 +154,7 @@ function generateExpenseValues(expense: Expense): string {
     `'${expense.periodicity}'`,
     `${expense.checked}`,
     `${expense.deleted}`,
+    `${expense.exception}`,
     `epoch_ms(${ts})`,
   ];
 

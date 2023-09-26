@@ -14,6 +14,7 @@ export type Expense = {
   periodicity: string;
   checked: boolean;
   deleted: boolean;
+  exception: boolean;
   updatedAt: Date;
 };
 
@@ -28,6 +29,7 @@ export type ExpenseDB = {
   periodicity: string;
   checked: boolean;
   deleted: boolean;
+  exception: boolean;
   updatedAt: string;
 };
 
@@ -72,6 +74,7 @@ function isExpenseUserValid(expenseStr: ExpenseUser): expenseStr is ExpenseDB {
     isPeriodicity(it.periodicity) &&
     isBoolean(it.checked) &&
     isBoolean(it.deleted) &&
+    isBoolean(it.exception) &&
     isTimestampString(it.updatedAt)
   );
 }
