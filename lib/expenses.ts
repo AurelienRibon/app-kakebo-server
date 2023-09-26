@@ -36,7 +36,17 @@ export type ExpenseDB = {
 // -----------------------------------------------------------------------------
 
 export function fromUserExpenses(expensesUser: ExpenseUser[]): Expense[] {
-  return expensesUser.filter(isExpenseUserValid).map(fromDBExpense);
+  const expenses = [];
+
+  for (const expenseUser of expensesUser) {
+    if (isExpenseUserValid(expenseUser)) {
+      expenses.push(fromDBExpense(expenseUser));
+    } else {
+      console.log('Invalid expense:', JSON.stringify(expenseUser));
+    }
+  }
+
+  return expenses;
 }
 
 export function fromDBExpenses(expensesDB: ExpenseDB[]): Expense[] {
