@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
   const logger = new Logger('/');
   res.send('Hello!');
-  logger.log('Done.');
+  logger.log('Done');
 });
 
 app.get('/schema', async (req, res) => {
@@ -42,7 +42,7 @@ app.get('/schema', async (req, res) => {
     logger.log('Sending response...');
     res.json(rows);
 
-    logger.log('Done.');
+    logger.log('Done');
   } catch (err: any) {
     logger.error(err);
     res.status(500).json({ error: err.message });
@@ -61,7 +61,7 @@ app.get('/expenses', async (req, res) => {
     logger.log('Sending response...');
     res.json(rows);
 
-    logger.log('Done.');
+    logger.log('Done');
   } catch (err: any) {
     logger.error(err);
     res.status(500).json({ error: err.message });
@@ -78,19 +78,19 @@ app.post('/expenses/sync', async (req, res) => {
     const db = new DB({ dev });
     const userExpenses = fromUserExpenses(expenses);
     const knownExpenses = await db.loadExpenses();
-    logger.log(`Found expenses user:${userExpenses.length}, server: ${knownExpenses.length}.`);
+    logger.log(`user:${userExpenses.length}, server: ${knownExpenses.length}.`);
 
     logger.log('Computing diff for server...');
     const expensesToUpsertForServer = diffExpenses(userExpenses, knownExpenses);
-    logger.log(`Found ${expensesToUpsertForServer.length} new expenses.`);
+    logger.log(`${expensesToUpsertForServer.length} new expenses`);
 
     logger.log('Computing diff for user...');
     const expensesToUpsertForUser = diffExpenses(knownExpenses, userExpenses);
-    logger.log(`Found ${expensesToUpsertForUser.length} new expenses.`);
+    logger.log(`${expensesToUpsertForUser.length} new expenses`);
 
     logger.log('Computing new monthly expenses...');
     const monthlyExpensesToInsert = generateNewMonthlyExpenses(knownExpenses);
-    logger.log(`Found ${monthlyExpensesToInsert.length} new expenses.`);
+    logger.log(`${monthlyExpensesToInsert.length} new expenses`);
 
     if (expensesToUpsertForServer.length > 0 || monthlyExpensesToInsert.length > 0) {
       logger.log('Starting upsert...');
@@ -101,7 +101,7 @@ app.post('/expenses/sync', async (req, res) => {
     logger.log('Sending response...');
     res.json({ expenses: [...expensesToUpsertForUser, ...monthlyExpensesToInsert] });
 
-    logger.log('Done.');
+    logger.log('Done');
   } catch (err: any) {
     logger.error(err);
     res.status(500).json({ error: err.message });
