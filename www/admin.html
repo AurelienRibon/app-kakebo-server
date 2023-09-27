@@ -75,7 +75,7 @@
 
       <textarea id="sqlQuery">SELECT * FROM %expenses% LIMIT 10</textarea>
 
-      <button onclick="executeQuery()">Execute</button>
+      <button id="btnExecute">Execute</button>
 
       <div id="result">
         <table id="resultsTable">
@@ -86,6 +86,9 @@
     </div>
 
     <script type="module">
+      const btnExecute = document.getElementById('btnExecute');
+      btnExecute.addEventListener('click', executeQuery, { passive: true });
+
       async function executeQuery() {
         const query = document.getElementById('sqlQuery').value;
         const headers = { 'Content-Type': 'application/json' };
