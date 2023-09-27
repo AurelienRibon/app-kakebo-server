@@ -13,7 +13,6 @@
       .container {
         display: flex;
         flex-direction: column;
-
         max-width: 800px;
         margin: auto;
       }
@@ -35,12 +34,10 @@
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        transition: background-color 0.3s ease;
       }
 
       button:hover {
         background-color: #0056b3;
-        justify-self: flex-start;
       }
 
       #result {
@@ -49,29 +46,82 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         background-color: #f7f7f7;
-        white-space: pre-wrap;
+      }
+
+      table {
+        border-collapse: collapse;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid #ccc;
+      }
+
+      th,
+      td {
+        padding: 8px 12px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <h2>Kakebo Database Admin</h2>
+
       <textarea id="sqlQuery">SELECT * FROM %expenses% LIMIT 10</textarea>
+
       <button onclick="executeQuery()">Execute</button>
-      <div id="result">...</div>
+
+      <div id="result">
+        <table id="resultsTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
-    <script>
+    <script type="module">
       async function executeQuery() {
         const query = document.getElementById('sqlQuery').value;
-
         const headers = { 'Content-Type': 'application/json' };
         const body = JSON.stringify({ query });
         const res = await fetch('/expenses/query', { method: 'POST', headers, body });
-        const json = await res.json();
+        const rows = await res.json();
+        renderTable(rows);
+      }
 
-        // Placeholder: Add your JS code to interact with the DuckDB database here and display results in the #result div.
-        document.getElementById('result').innerText = JSON.stringify(json, null, 2);
+      function renderTable(rows) {
+        const table = document.getElementById('resultsTable');
+        const thead = table.querySelector('thead');
+        const tbody = table.querySelector('tbody');
+
+        thead.innerHTML = '';
+        tbody.innerHTML = '';
+
+        const header = document.createElement('tr');
+        thead.appendChild(header);
+
+        for (const key of Object.keys(rows[0])) {
+          const th = document.createElement('th');
+          th.textContent = key;
+          header.appendChild(th);
+        }
+
+        for (const row of rows) {
+          const tr = document.createElement('tr');
+          tbody.appendChild(tr);
+
+          for (const val of Object.values(row)) {
+            const td = document.createElement('td');
+            td.textContent = val;
+            tr.appendChild(td);
+          }
+        }
       }
     </script>
   </body>
