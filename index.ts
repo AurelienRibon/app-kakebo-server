@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
-  const logger = new Logger('/');
+  const logger = new Logger('/admin');
   logger.log('Got request');
   res.sendFile(__dirname + '/www/admin.html');
 });
