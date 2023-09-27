@@ -47,6 +47,7 @@
         border-radius: 5px;
         background-color: #d4d4d4;
         overflow-x: auto;
+        white-space: pre-wrap;
       }
 
       table {
@@ -74,17 +75,9 @@
   <body>
     <div class="container">
       <h2>Kakebo Database Admin</h2>
-
       <textarea id="sqlQuery">SELECT * FROM %expenses% LIMIT 10</textarea>
-
       <button id="btnExecute">Execute</button>
-
-      <div id="result">
-        <table id="resultsTable">
-          <thead></thead>
-          <tbody></tbody>
-        </table>
-      </div>
+      <div id="result"></div>
     </div>
 
     <script type="module">
@@ -95,18 +88,28 @@
         const query = document.getElementById('sqlQuery').value;
         const headers = { 'Content-Type': 'application/json' };
         const body = JSON.stringify({ query });
-        const res = await fetch('/expenses/query', { method: 'POST', headers, body });
-        const rows = await res.json();
-        renderTable(rows);
+
+        try {
+          const res = await fetch('/expenses/query', { method: 'POST', headers, body });
+          const json = await res.json();
+
+          if (!res.ok) {
+            throw new Error(json?.error || await res.text());
+          } else {
+            renderTable(json);
+          }
+        } catch (err) {
+          const div = document.getElementById('result');
+          div.innerHTML = err.message;
+        }
       }
 
       function renderTable(rows) {
-        const table = document.getElementById('resultsTable');
-        const thead = table.querySelector('thead');
-        const tbody = table.querySelector('tbody');
-
-        thead.innerHTML = '';
-        tbody.innerHTML = '';
+        const div = document.getElementById('result');
+        div.innerHTML = '<table><thead></thead><tbody></tbody></table>'
+        const table = div.querySelector('table');
+        const thead = div.querySelector('thead');
+        const tbody = div.querySelector('tbody');
 
         const header = document.createElement('tr');
         thead.appendChild(header);
