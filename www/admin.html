@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DuckDB Admin</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+
+        max-width: 800px;
+        margin: auto;
+      }
+
+      textarea {
+        min-height: 120px;
+        padding: 10px;
+        resize: vertical;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        display: block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+        justify-self: flex-start;
+      }
+
+      #result {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f7f7f7;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Kakebo Database Admin</h2>
+      <textarea id="sqlQuery">SELECT * FROM %expenses% LIMIT 10</textarea>
+      <button onclick="executeQuery()">Execute</button>
+      <div id="result">...</div>
+    </div>
+
+    <script>
+      async function executeQuery() {
+        const query = document.getElementById('sqlQuery').value;
+
+        const headers = { 'Content-Type': 'application/json' };
+        const body = JSON.stringify({ query });
+        const res = await fetch('/expenses/query', { method: 'POST', headers, body });
+        const json = await res.json();
+
+        // Placeholder: Add your JS code to interact with the DuckDB database here and display results in the #result div.
+        document.getElementById('result').innerText = JSON.stringify(json, null, 2);
+      }
+    </script>
+  </body>
+</html>

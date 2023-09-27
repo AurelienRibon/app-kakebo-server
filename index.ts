@@ -6,10 +6,11 @@ import { Logger } from './lib/logger.js';
 
 const app = express();
 
+app.listen(3000, () => console.log('Started!'));
+app.set('json spaces', 2);
+
 app.use(compression());
 app.use(express.json({ limit: '2MB' }));
-app.set('json spaces', 2);
-app.listen(3000, () => console.log('Started!'));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -28,6 +29,12 @@ app.get('/', (req, res) => {
   const logger = new Logger('/');
   logger.log('Got request');
   res.send('Hello!');
+});
+
+app.get('/admin', (req, res) => {
+  const logger = new Logger('/');
+  logger.log('Got request');
+  res.sendFile(__dirname + '/www/admin.html');
 });
 
 app.get('/schema', async (req, res) => {
