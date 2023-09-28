@@ -42,8 +42,8 @@ async function translateQuery(query) {
     },
   });
 
-  const answer = json?.choices?.[0]?.text;
-  $querySQL.value = answer;
+  const answer = json?.choices?.[0]?.message?.content;
+  $querySQL.value = answer ?? JSON.stringify(json, null, 2);
 }
 
 function getPrompt() {
