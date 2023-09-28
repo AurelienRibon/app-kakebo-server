@@ -41,7 +41,7 @@ export class DB {
   }
 
   async queryExpenses(query: string): Promise<Row[]> {
-    return this.query(query.replace('%expenses%', this.from));
+    return this.query(query.replaceAll('%expenses%', this.from));
   }
 
   // Write
