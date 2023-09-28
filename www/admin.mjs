@@ -26,6 +26,7 @@ $btnTranslate.addEventListener('click', async () => {
 
 async function translateQuery(query) {
   const key = localStorage.getItem('openaiKey');
+  const model = localStorage.getItem('openaiModel');
   if (!key) {
     throw new Error('Add OpenAI key to `localStorage.openaiKey`.');
   }
@@ -33,7 +34,7 @@ async function translateQuery(query) {
   const json = await post('https://api.openai.com/v1/chat/completions', {
     headers: { Authorization: `Bearer ${key}` },
     data: {
-      model: 'gpt-3.5-turbo',
+      model: model ?? 'gpt-3.5-turbo',
       messages: [
         { role: 'system', content: getPrompt() },
         { role: 'user', content: query },
@@ -61,7 +62,7 @@ The CSV file has the following columns:
   - amount (DOUBLE) : the amount of the expense, negative for expenses, positive for incomes
   - category (VARCHAR) : 'courses', 'animaux', 'banque', 'bien-être', 'cadeaux', 'chess', 'culture', 'divers', 'dons', 'école', 'essence', 'impots', 'maison', 'restos', 'salaires', 'santé', 'soulac', 'sport', 'vêtements', 'voiture', 'voyages'
   - label (VARCHAR) : any text
-  - periodicity (VARCHAR) : can be 'monthly' or 'one-time'. Monthly expenses are automated recurrent ones, like rent or internet. One-time expenses are daily ones, like groceries.
+  - periodicity (VARCHAR) : can be 'monthly' or 'one-time'.
   - checked (BOOLEAN) : if the expense has been validated on the bank account
   - deleted (BOOLEAN) : if the expense has been deleted
   - exception (BOOLEAN) : if the expense is exceptional and not counted in the budget
@@ -69,6 +70,9 @@ The CSV file has the following columns:
 
 Unless requested otherwise, never include deleted expenses in the results.
 Unless user mentions income, an expense is always a negative amount.
+
+Monthly expenses are recurrent ones, like rent or internet.
+One-time expenses are daily ones, like groceries.
 
 Example: Select the latest 10 expenses
   SELECT * FROM %expenses% WHERE deleted = False ORDER BY date DESC LIMIT 10
@@ -78,7 +82,13 @@ Example: What is my biggest expense?
 
 Example: What is my biggest income?
   SELECT * FROM %expenses% WHERE deleted = False AND amount > 0 ORDER BY amount DESC LIMIT 1
-  `;
+
+Example: How much do I spend per month since 2022?
+  SELECT EXTRACT(YEAR FROM date) AS year, EXTRACT(MONTH FROM date) AS month, SUM(amount) AS total
+  FROM %expenses%
+  WHERE deleted = False AND amount < 0 AND date >= '2022-01-01'
+  GROUP BY year, month
+  ORDER BY year, month`;
 }
 
 // -----------------------------------------------------------------------------
