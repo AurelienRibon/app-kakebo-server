@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "rm -rf dist && tsc && cp -r www dist/www",
+    "build": "rm -rf dist && tsc",
     "dev": "rm -rf dist && tsc -w",
     "start": "node dist/index.js"
   },

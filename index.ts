@@ -9,11 +9,8 @@ const app = express();
 app.listen(3000, () => console.log('Started!'));
 app.set('json spaces', 2);
 
-app.use(compression());
-app.use(express.json({ limit: '2MB' }));
-app.use(express.static('www'));
-
 app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', '*');
   res.setHeader('Access-Control-Allow-Headers', '*');
@@ -25,6 +22,10 @@ app.use((req, res, next) => {
     next();
   }
 });
+
+app.use(compression());
+app.use(express.json({ limit: '2MB' }));
+app.use(express.static('www'));
 
 app.get('/', (req, res) => {
   const logger = new Logger('/');
