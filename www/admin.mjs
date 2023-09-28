@@ -67,8 +67,10 @@ The CSV file has the following columns:
   - exception (BOOLEAN) : if the expense is exceptional and not counted in the budget
   - updatedAt (TIMESTAMP) : the last time the expense entry has been updated
 
+Unless requested otherwise, never include deleted expenses in the results.
+
 For instance, to select the latest 10 expenses, you can use the following SQL query:
-SELECT * FROM %expenses% ORDER BY date DESC LIMIT 10
+SELECT * FROM %expenses% WHERE deleted = False ORDER BY date DESC LIMIT 10
   `;
 }
 
