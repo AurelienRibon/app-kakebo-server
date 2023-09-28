@@ -61,7 +61,7 @@ The CSV file has the following columns:
   - amount (DOUBLE) : the amount of the expense, negative for expenses, positive for incomes
   - category (VARCHAR) : 'courses', 'animaux', 'banque', 'bien-être', 'cadeaux', 'chess', 'culture', 'divers', 'dons', 'école', 'essence', 'impots', 'maison', 'restos', 'salaires', 'santé', 'soulac', 'sport', 'vêtements', 'voiture', 'voyages'
   - label (VARCHAR) : any text
-  - periodicity (VARCHAR) : can be 'monthly' or 'one-time'
+  - periodicity (VARCHAR) : can be 'monthly' or 'one-time'. Monthly expenses are automated recurrent ones, like rent or internet. One-time expenses are daily ones, like groceries.
   - checked (BOOLEAN) : if the expense has been validated on the bank account
   - deleted (BOOLEAN) : if the expense has been deleted
   - exception (BOOLEAN) : if the expense is exceptional and not counted in the budget
