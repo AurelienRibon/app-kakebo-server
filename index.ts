@@ -11,6 +11,7 @@ app.set('json spaces', 2);
 
 app.use(compression());
 app.use(express.json({ limit: '2MB' }));
+app.use(express.static('www'));
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -31,12 +32,6 @@ app.get('/', (req, res) => {
   res.send('Hello!');
 });
 
-app.get('/admin', (req, res) => {
-  const logger = new Logger('/admin');
-  logger.log('Got request');
-  res.sendFile(__dirname + '/www/admin.html');
-});
-
 app.get('/schema', async (req, res) => {
   const logger = new Logger('/schema');
   const dev = !!req.query.dev;
@@ -50,7 +45,7 @@ app.get('/schema', async (req, res) => {
     res.json(rows);
   } catch (err: any) {
     logger.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).send(err.message);
   }
 });
 
@@ -67,7 +62,7 @@ app.get('/expenses', async (req, res) => {
     res.json(rows);
   } catch (err: any) {
     logger.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).send(err.message);
   }
 });
 
@@ -86,7 +81,7 @@ app.post('/expenses/query', async (req, res) => {
     res.json(rows);
   } catch (err: any) {
     logger.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).send(err.message);
   }
 });
 
@@ -105,7 +100,7 @@ app.post('/expenses/mutate', async (req, res) => {
     res.end();
   } catch (err: any) {
     logger.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).send(err.message);
   }
 });
 
@@ -143,6 +138,6 @@ app.post('/expenses/sync', async (req, res) => {
     res.json({ expenses: [...expensesToUpsertForUser, ...monthlyExpensesToInsert] });
   } catch (err: any) {
     logger.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).send(err.message);
   }
 });

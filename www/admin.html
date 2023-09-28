@@ -17,8 +17,12 @@
         margin: auto;
       }
 
+      h4 {
+        margin-bottom: 5px;
+      }
+
       textarea {
-        min-height: 120px;
+        min-height: 60px;
         padding: 10px;
         resize: vertical;
         border-radius: 5px;
@@ -27,6 +31,7 @@
 
       button {
         display: block;
+        align-self: flex-start;
         margin-top: 20px;
         padding: 10px 20px;
         background-color: #007bff;
@@ -75,62 +80,18 @@
   <body>
     <div class="container">
       <h2>Kakebo Database Admin</h2>
-      <textarea id="sqlQuery">SELECT * FROM %expenses% LIMIT 10</textarea>
-      <button id="btnExecute">Execute</button>
+
+      <h4>ChatGPT</h4>
+      <textarea id="queryGPT">Liste les 10 dépenses les plus récentes</textarea>
+      <button id="btnTranslate">TRANSLATE</button>
+
+      <h4>SQL</h4>
+      <textarea id="querySQL">SELECT * FROM %expenses% LIMIT 10</textarea>
+      <button id="btnExecute">EXECUTE</button>
+
       <div id="result"></div>
     </div>
 
-    <script type="module">
-      const btnExecute = document.getElementById('btnExecute');
-      btnExecute.addEventListener('click', executeQuery, { passive: true });
-
-      async function executeQuery() {
-        const query = document.getElementById('sqlQuery').value;
-        const headers = { 'Content-Type': 'application/json' };
-        const body = JSON.stringify({ query });
-
-        try {
-          const res = await fetch('/expenses/query', { method: 'POST', headers, body });
-          const json = await res.json();
-
-          if (!res.ok) {
-            throw new Error(json?.error || await res.text());
-          } else {
-            renderTable(json);
-          }
-        } catch (err) {
-          const div = document.getElementById('result');
-          div.innerHTML = err.message;
-        }
-      }
-
-      function renderTable(rows) {
-        const div = document.getElementById('result');
-        div.innerHTML = '<table><thead></thead><tbody></tbody></table>'
-        const table = div.querySelector('table');
-        const thead = div.querySelector('thead');
-        const tbody = div.querySelector('tbody');
-
-        const header = document.createElement('tr');
-        thead.appendChild(header);
-
-        for (const key of Object.keys(rows[0])) {
-          const th = document.createElement('th');
-          th.textContent = key;
-          header.appendChild(th);
-        }
-
-        for (const row of rows) {
-          const tr = document.createElement('tr');
-          tbody.appendChild(tr);
-
-          for (const val of Object.values(row)) {
-            const td = document.createElement('td');
-            td.textContent = val;
-            tr.appendChild(td);
-          }
-        }
-      }
-    </script>
+    <script type="module" src="admin.mjs"></script>
   </body>
 </html>
