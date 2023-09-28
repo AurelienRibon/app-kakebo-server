@@ -1,26 +1,24 @@
-export function setup() {
-  const $queryGPT = document.getElementById('queryGPT');
-  const $querySQL = document.getElementById('querySQL');
-  const $btnExecute = document.getElementById('btnExecute');
-  const $btnTranslate = document.getElementById('btnTranslate');
-  const $result = document.getElementById('result');
+const $queryGPT = document.getElementById('queryGPT');
+const $querySQL = document.getElementById('querySQL');
+const $btnExecute = document.getElementById('btnExecute');
+const $btnTranslate = document.getElementById('btnTranslate');
+const $result = document.getElementById('result');
 
-  $btnExecute.addEventListener('click', async () => {
-    try {
-      await executeQuery($querySQL.value);
-    } catch (err) {
-      $result.innerHTML = err.message;
-    }
-  });
+$btnExecute.addEventListener('click', async () => {
+  try {
+    await executeQuery($querySQL.value);
+  } catch (err) {
+    $result.innerHTML = err.message;
+  }
+});
 
-  $btnTranslate.addEventListener('click', async () => {
-    try {
-      await translateQuery($queryGPT.value);
-    } catch (err) {
-      $result.innerHTML = err.message;
-    }
-  });
-}
+$btnTranslate.addEventListener('click', async () => {
+  try {
+    await translateQuery($queryGPT.value);
+  } catch (err) {
+    $result.innerHTML = err.message;
+  }
+});
 
 // -----------------------------------------------------------------------------
 // GPT
@@ -47,7 +45,6 @@ async function translateQuery(query) {
   const json = await res.json();
   const answer = json?.choices?.[0]?.text;
 
-  const $querySQL = document.getElementById('querySQL');
   $querySQL.value = answer;
 }
 
@@ -87,7 +84,6 @@ async function executeQuery(query) {
 }
 
 function renderTable(rows) {
-  const $result = document.getElementById('result');
   $result.innerHTML = '<table><thead></thead><tbody></tbody></table>';
 
   const thead = $result.querySelector('thead');
