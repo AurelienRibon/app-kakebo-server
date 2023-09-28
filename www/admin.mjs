@@ -30,7 +30,7 @@ async function translateQuery(query) {
     throw new Error('Add OpenAI key to `localStorage.openaiKey`.');
   }
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+  const res = await post('https://api.openai.com/v1/chat/completions', {
     headers: { Authorization: `Bearer ${key}` },
     data: {
       model: 'gpt-3.5-turbo',
