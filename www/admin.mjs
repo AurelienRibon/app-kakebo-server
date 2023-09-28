@@ -68,9 +68,16 @@ The CSV file has the following columns:
   - updatedAt (TIMESTAMP) : the last time the expense entry has been updated
 
 Unless requested otherwise, never include deleted expenses in the results.
+Unless user mentions income, an expense is always a negative amount.
 
-For instance, to select the latest 10 expenses, you can use the following SQL query:
-SELECT * FROM %expenses% WHERE deleted = False ORDER BY date DESC LIMIT 10
+Example: Select the latest 10 expenses
+  SELECT * FROM %expenses% WHERE deleted = False ORDER BY date DESC LIMIT 10
+
+Example: What is my biggest expense?
+  SELECT * FROM %expenses% WHERE deleted = False AND amount < 0 ORDER BY amount ASC LIMIT 1
+
+Example: What is my biggest income?
+  SELECT * FROM %expenses% WHERE deleted = False AND amount > 0 ORDER BY amount DESC LIMIT 1
   `;
 }
 
