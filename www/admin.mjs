@@ -58,7 +58,7 @@ replaced by the right 'read_csv()' command at runtime.
 The CSV file has the following columns:
   - _id (VARCHAR) PRIMARY KEY
   - date (DATE) : the date of the expense
-  - amount (DOUBLE) : the amount of the expense
+  - amount (DOUBLE) : the amount of the expense, negative for expenses, positive for incomes
   - category (VARCHAR) : 'courses', 'animaux', 'banque', 'bien-être', 'cadeaux', 'chess', 'culture', 'divers', 'dons', 'école', 'essence', 'impots', 'maison', 'restos', 'salaires', 'santé', 'soulac', 'sport', 'vêtements', 'voiture', 'voyages'
   - label (VARCHAR) : any text
   - periodicity (VARCHAR) : can be 'monthly' or 'one-time'
