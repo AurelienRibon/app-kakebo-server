@@ -30,7 +30,7 @@ async function translateQuery(query) {
     throw new Error('Add OpenAI key to `localStorage.openaiKey`.');
   }
 
-  const res = await post('https://api.openai.com/v1/chat/completions', {
+  const json = await post('https://api.openai.com/v1/chat/completions', {
     headers: { Authorization: `Bearer ${key}` },
     data: {
       model: 'gpt-3.5-turbo',
@@ -42,9 +42,7 @@ async function translateQuery(query) {
     },
   });
 
-  const json = await res.json();
   const answer = json?.choices?.[0]?.text;
-
   $querySQL.value = answer;
 }
 
