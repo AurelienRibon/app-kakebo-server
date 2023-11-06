@@ -1,5 +1,4 @@
-dist
-node_modules
+/dist
+/node_modules
+/*.csv
 .DS_Store
-expenses.csv
-expenses-dev.csv
