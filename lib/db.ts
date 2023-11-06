@@ -1,4 +1,5 @@
 import duckdb from 'duckdb';
+import fs from 'fs';
 import { stringifyDate } from './dates';
 import { Expense, ExpenseDB, fromDBExpenses } from './expenses';
 
@@ -65,9 +66,10 @@ export class DB {
       CREATE TEMP TABLE Expenses (${columnsTable});
       COPY Expenses FROM '${this.file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');
       ${mutation}
-      COPY (${select}) TO '${this.file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');`;
+      COPY (${select}) TO '${this.file}.tmp.csv' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');`;
 
     await this.exec(sql);
+    fs.renameSync(`${this.file}.tmp.csv`, this.file);
   }
 
   // Low-level DuckDB Access
