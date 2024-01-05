@@ -38,7 +38,7 @@ export class DB {
   }
 
   async loadSchema(): Promise<duckdb.RowData[]> {
-    return this.query(`DESCRIBE SELECT * FROM %expenses%`);
+    return this.queryExpenses(`DESCRIBE SELECT * FROM %expenses%`);
   }
 
   async queryExpenses(query: string): Promise<Row[]> {
