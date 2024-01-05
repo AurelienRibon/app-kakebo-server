@@ -58,18 +58,29 @@ export class DB {
   }
 
   async mutateExpenses(statements: string[]): Promise<void> {
-    const columnsTable = generateColumnsForTable();
-    const select = `SELECT * FROM Expenses ORDER BY date,category,label,amount,deleted`;
-    const mutation = statements.map(ensureSemicolon).join('\n');
+    const file = this.file;
+    const fileTmp = `${file}.tmp.csv`;
+    const fileBackup = `${file}.backup.csv`;
 
-    const sql = `
-      CREATE TEMP TABLE Expenses (${columnsTable});
-      COPY Expenses FROM '${this.file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');
-      ${mutation}
-      COPY (${select}) TO '${this.file}.tmp.csv' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');`;
+    fs.copyFileSync(this.file, fileBackup);
 
-    await this.exec(sql);
-    fs.renameSync(`${this.file}.tmp.csv`, this.file);
+    try {
+      const columnsTable = generateColumnsForTable();
+      const select = `SELECT * FROM Expenses ORDER BY date,category,label,amount,deleted`;
+      const mutation = statements.map(ensureSemicolon).join('\n');
+
+      const sql = `
+        CREATE TEMP TABLE Expenses (${columnsTable});
+        COPY Expenses FROM '${file}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');
+        ${mutation}
+        COPY (${select}) TO '${fileTmp}' (HEADER, TIMESTAMPFORMAT '${TS_FORMAT}');`;
+
+      await this.exec(sql);
+      fs.renameSync(fileTmp, file);
+    } catch (err) {
+      fs.copyFileSync(fileBackup, file);
+      throw err;
+    }
   }
 
   // Low-level DuckDB Access
